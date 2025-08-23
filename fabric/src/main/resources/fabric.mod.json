@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "id": "observing_eyeblossom",
+  "version": "${version}",
+  "name": "Observing Eyeblossom",
+  "description": "The Eyeblossom now blooms when looked at!",
+  "authors": [
+    "TanConan"
+  ],
+  "contact": {
+    "homepage": "",
+    "sources": "https://github.com/TanConan/observing-eyeblossom"
+  },
+  "license": "MIT",
+  "icon": "assets/observing_eyeblossom/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.github.tanconan.observing_eyeblossom.fabric.ObservingEyeblossomModFabric"
+    ],
+    "client": [
+      "com.github.tanconan.observing_eyeblossom.fabric.client.ObservingEyeblossomModFabricClient"
+    ]
+  },
+  "mixins": [
+    "observing_eyeblossom.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.17.2",
+    "minecraft": "~1.21.8",
+    "java": ">=21",
+    "architectury": ">=17.0.8",
+    "fabric-api": "*"
+  },
+  "suggests": {
+    "another-mod": "*"
+  }
+}
