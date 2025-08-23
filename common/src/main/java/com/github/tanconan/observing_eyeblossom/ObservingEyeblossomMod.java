@@ -2,7 +2,6 @@ package com.github.tanconan.observing_eyeblossom;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -15,17 +14,20 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.EyeblossomBlock;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.gameevent.GameEvent.Context;
-import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
 
 public final class ObservingEyeblossomMod {
     public static final String MOD_ID = "observing_eyeblossom";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
+    private static final double MAX_BLOSSOM_OBSERVATION_DISTANCE = 16;
+    private static final double SPYGLAS_BLOSSOM_OBSERVATION_DISTANCE_MULT = 10;
     private static final Map<ResourceKey<Level>, Set<BlockPos>> viewedPositionsPerDimension = new HashMap<>();
     private static final Map<ResourceKey<Level>, Set<BlockPos>> openEyeblossomsPerDimension = new HashMap<>();
 
@@ -61,10 +63,13 @@ public final class ObservingEyeblossomMod {
         viewedPositions.clear();
     }
 
-    private static List<BlockPos> getViewedBlockPositions(ServerPlayer player) {
-        if (player.pick(10, 0, false) instanceof BlockHitResult blockHitResult)
-            return List.of(blockHitResult.getBlockPos());
-        return List.of();
+    private static Set<BlockPos> getViewedBlockPositions(ServerPlayer player) {
+        double distance = (player.isUsingItem() && player.getUseItem().is(Items.SPYGLASS)
+                ? SPYGLAS_BLOSSOM_OBSERVATION_DISTANCE_MULT
+                : 1) * MAX_BLOSSOM_OBSERVATION_DISTANCE;
+        Vec3 start = player.getEyePosition(1.0F);
+        Vec3 end = start.add(player.getLookAngle().scale(distance));
+        return traverseBlocks(start, end);
     }
 
     private static void openEyeblossom(ServerLevel level, BlockPos pos) {
@@ -81,5 +86,77 @@ public final class ObservingEyeblossomMod {
         level.gameEvent(GameEvent.BLOCK_CHANGE, pos, Context.of(Blocks.OPEN_EYEBLOSSOM.defaultBlockState()));
         EyeblossomBlock.Type.CLOSED.spawnTransformParticle(level, pos, level.getRandom());
         level.playSound(null, pos, EyeblossomBlock.Type.CLOSED.longSwitchSound(), SoundSource.BLOCKS, 1.0F, 1.0F);
+    }
+
+    private static Set<BlockPos> traverseBlocks(Vec3 start, Vec3 end) {
+        Set<BlockPos> visited = new HashSet<>();
+
+        double x = start.x;
+        double y = start.y;
+        double z = start.z;
+
+        int bx = (int) Math.floor(x);
+        int by = (int) Math.floor(y);
+        int bz = (int) Math.floor(z);
+
+        int tx = (int) Math.floor(end.x);
+        int ty = (int) Math.floor(end.y);
+        int tz = (int) Math.floor(end.z);
+
+        double dx = end.x - start.x;
+        double dy = end.y - start.y;
+        double dz = end.z - start.z;
+
+        int stepX = (dx > 0) ? 1 : (dx < 0) ? -1 : 0;
+        int stepY = (dy > 0) ? 1 : (dy < 0) ? -1 : 0;
+        int stepZ = (dz > 0) ? 1 : (dz < 0) ? -1 : 0;
+
+        double tMaxX = intBound(x, dx);
+        double tMaxY = intBound(y, dy);
+        double tMaxZ = intBound(z, dz);
+
+        double tDeltaX = (stepX != 0) ? 1.0 / Math.abs(dx) : Double.MAX_VALUE;
+        double tDeltaY = (stepY != 0) ? 1.0 / Math.abs(dy) : Double.MAX_VALUE;
+        double tDeltaZ = (stepZ != 0) ? 1.0 / Math.abs(dz) : Double.MAX_VALUE;
+
+        // Sicherheit: max steps = Distanz * 3
+        int maxSteps = (int) ((Math.abs(dx) + Math.abs(dy) + Math.abs(dz)) * 3);
+
+        for (int i = 0; i < maxSteps; i++) {
+            visited.add(new BlockPos(bx, by, bz));
+
+            if (bx == tx && by == ty && bz == tz)
+                break;
+
+            if (tMaxX < tMaxY) {
+                if (tMaxX < tMaxZ) {
+                    bx += stepX;
+                    tMaxX += tDeltaX;
+                } else {
+                    bz += stepZ;
+                    tMaxZ += tDeltaZ;
+                }
+            } else {
+                if (tMaxY < tMaxZ) {
+                    by += stepY;
+                    tMaxY += tDeltaY;
+                } else {
+                    bz += stepZ;
+                    tMaxZ += tDeltaZ;
+                }
+            }
+        }
+
+        return visited;
+    }
+
+    private static double intBound(double s, double ds) {
+        if (ds > 0) {
+            return (Math.ceil(s) - s) / ds;
+        } else if (ds < 0) {
+            return (s - Math.floor(s)) / -ds;
+        } else {
+            return Double.POSITIVE_INFINITY;
+        }
     }
 }
