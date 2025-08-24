@@ -58,6 +58,12 @@ public record IsObserved() implements ConditionalItemModelProperty {
             if (localPlayer.getInventory().getSelectedItem() == itemStack) {
                 return true;
             }
+            if (localPlayer.containerMenu != null) {
+                ItemStack heldItem = localPlayer.containerMenu.getCarried();
+                if (heldItem != null && !heldItem.isEmpty() && heldItem == itemStack) {
+                    return true;
+                }
+            }
             var mc = Minecraft.getInstance();
             if (mc.screen instanceof AbstractContainerScreen<?> screen) {
                 Slot hovered = ((AbstractContainerScreenAccessor) screen).getHoveredSlot();
