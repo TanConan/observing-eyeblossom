@@ -14,6 +14,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Mth;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
@@ -26,8 +27,9 @@ public final class ObservingEyeblossomMod {
     public static final String MOD_ID = "observing_eyeblossom";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
-    private static final double MAX_BLOSSOM_OBSERVATION_DISTANCE = 16;
-    private static final double SPYGLAS_BLOSSOM_OBSERVATION_DISTANCE_MULT = 10;
+    public static final double MAX_BLOSSOM_OBSERVATION_DISTANCE = 16;
+    public static final double SPYGLAS_BLOSSOM_OBSERVATION_DISTANCE_MULT = 10;
+
     private static final Map<ResourceKey<Level>, Set<BlockPos>> viewedPositionsPerDimension = new HashMap<>();
     private static final Map<ResourceKey<Level>, Set<BlockPos>> openEyeblossomsPerDimension = new HashMap<>();
 
@@ -95,13 +97,13 @@ public final class ObservingEyeblossomMod {
         double y = start.y;
         double z = start.z;
 
-        int bx = (int) Math.floor(x);
-        int by = (int) Math.floor(y);
-        int bz = (int) Math.floor(z);
+        int bx = (int) Mth.floor(x);
+        int by = (int) Mth.floor(y);
+        int bz = (int) Mth.floor(z);
 
-        int tx = (int) Math.floor(end.x);
-        int ty = (int) Math.floor(end.y);
-        int tz = (int) Math.floor(end.z);
+        int tx = (int) Mth.floor(end.x);
+        int ty = (int) Mth.floor(end.y);
+        int tz = (int) Mth.floor(end.z);
 
         double dx = end.x - start.x;
         double dy = end.y - start.y;
@@ -119,7 +121,6 @@ public final class ObservingEyeblossomMod {
         double tDeltaY = (stepY != 0) ? 1.0 / Math.abs(dy) : Double.MAX_VALUE;
         double tDeltaZ = (stepZ != 0) ? 1.0 / Math.abs(dz) : Double.MAX_VALUE;
 
-        // Sicherheit: max steps = Distanz * 3
         int maxSteps = (int) ((Math.abs(dx) + Math.abs(dy) + Math.abs(dz)) * 3);
 
         for (int i = 0; i < maxSteps; i++) {
@@ -152,9 +153,9 @@ public final class ObservingEyeblossomMod {
 
     private static double intBound(double s, double ds) {
         if (ds > 0) {
-            return (Math.ceil(s) - s) / ds;
+            return (Mth.ceil(s) - s) / ds;
         } else if (ds < 0) {
-            return (s - Math.floor(s)) / -ds;
+            return (s - Mth.floor(s)) / -ds;
         } else {
             return Double.POSITIVE_INFINITY;
         }

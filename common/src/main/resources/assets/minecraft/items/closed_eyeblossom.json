@@ -1,0 +1,14 @@
+{
+  "model": {
+    "type": "minecraft:condition",
+    "property": "observing_eyeblossom:observed",
+    "on_true": {
+      "type": "minecraft:model",
+      "model": "minecraft:item/open_eyeblossom"
+    },
+    "on_false": {
+      "type": "minecraft:model",
+      "model": "minecraft:item/closed_eyeblossom"
+    }
+  }
+}

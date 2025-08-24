@@ -1,0 +1,72 @@
+package com.github.tanconan.observing_eyeblossom.fabric.client;
+
+import com.github.tanconan.observing_eyeblossom.ObservingEyeblossomMod;
+import com.github.tanconan.observing_eyeblossom.mixin.AbstractContainerScreenAccessor;
+import com.mojang.serialization.MapCodec;
+
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.renderer.item.properties.conditional.ConditionalItemModelProperty;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemDisplayContext;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.Vec3;
+
+@Environment(EnvType.CLIENT)
+public record IsObserved() implements ConditionalItemModelProperty {
+    public static final MapCodec<IsObserved> MAP_CODEC = MapCodec.unit(new IsObserved());
+
+    public IsObserved() {
+    }
+
+    public boolean get(ItemStack itemStack, ClientLevel clientLevel, LivingEntity livingEntity,
+            int i, ItemDisplayContext itemDisplayContext) {
+        // If the Itemstack ist in the world
+        if (itemDisplayContext == ItemDisplayContext.GROUND || itemDisplayContext == ItemDisplayContext.FIXED) {
+            Entity itemEntity = itemStack.getEntityRepresentation();
+            for (var player : clientLevel.players()) {
+                double maxDist = ObservingEyeblossomMod.MAX_BLOSSOM_OBSERVATION_DISTANCE;
+                double d2 = player.distanceToSqr(itemEntity);
+                if (d2 > maxDist * maxDist)
+                    continue;
+
+                double d = Math.sqrt(d2);
+                double t = Mth.clamp(d / maxDist, 0.0, 1.0);
+                double allowedDeg = Mth.lerp(t, 15.0, 2.0); // 15 deg near needed and 2 deg if far
+                double cosThreshold = Math.cos(Math.toRadians(allowedDeg));
+
+                Vec3 toItem = itemEntity.position().subtract(player.getEyePosition(1.0F)).normalize();
+                double dot = toItem.dot(player.getLookAngle());
+
+                if (dot >= cosThreshold) {
+                    return true;
+                }
+            }
+        }
+        // If the Itemstack is in the players inventory
+        if (livingEntity instanceof LocalPlayer localPlayer) {
+            if (localPlayer.getInventory().getSelectedItem() == itemStack) {
+                return true;
+            }
+            var mc = Minecraft.getInstance();
+            if (mc.screen instanceof AbstractContainerScreen<?> screen) {
+                Slot hovered = ((AbstractContainerScreenAccessor) screen).getHoveredSlot();
+                if (hovered != null && !hovered.getItem().isEmpty() && hovered.getItem() == itemStack) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public MapCodec<IsObserved> type() {
+        return MAP_CODEC;
+    }
+}
