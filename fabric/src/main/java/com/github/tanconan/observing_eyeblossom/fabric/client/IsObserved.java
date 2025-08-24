@@ -11,7 +11,6 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.item.properties.conditional.ConditionalItemModelProperty;
-import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.inventory.Slot;
@@ -32,15 +31,20 @@ public record IsObserved() implements ConditionalItemModelProperty {
         if (itemDisplayContext == ItemDisplayContext.GROUND || itemDisplayContext == ItemDisplayContext.FIXED) {
             Entity itemEntity = itemStack.getEntityRepresentation();
             for (var player : clientLevel.players()) {
-                double maxDist = ObservingEyeblossomMod.MAX_BLOSSOM_OBSERVATION_DISTANCE;
+                double maxDist = ObservingEyeblossomMod.getMaxObservationDistance(player);
                 double d2 = player.distanceToSqr(itemEntity);
                 if (d2 > maxDist * maxDist)
                     continue;
 
                 double d = Math.sqrt(d2);
-                double t = Mth.clamp(d / maxDist, 0.0, 1.0);
-                double allowedDeg = Mth.lerp(t, 15.0, 2.0); // 15 deg near needed and 2 deg if far
-                double cosThreshold = Math.cos(Math.toRadians(allowedDeg));
+
+                double tolerance = 0.5;
+                double cosThreshold;
+                if (d > tolerance) {
+                    cosThreshold = Math.sqrt(1.0 - (tolerance * tolerance) / d2);
+                } else {
+                    cosThreshold = -1.0;
+                }
 
                 Vec3 toItem = itemEntity.position().subtract(player.getEyePosition(1.0F)).normalize();
                 double dot = toItem.dot(player.getLookAngle());

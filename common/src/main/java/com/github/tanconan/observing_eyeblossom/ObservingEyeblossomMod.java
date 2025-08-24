@@ -15,6 +15,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
@@ -35,6 +36,12 @@ public final class ObservingEyeblossomMod {
 
     public static void init() {
         TickEvent.SERVER_LEVEL_POST.register(ObservingEyeblossomMod::serverLevelPostTick);
+    }
+
+    public static double getMaxObservationDistance(Player player) {
+        return (player.isUsingItem() && player.getUseItem().is(Items.SPYGLASS)
+                ? SPYGLAS_BLOSSOM_OBSERVATION_DISTANCE_MULT
+                : 1) * MAX_BLOSSOM_OBSERVATION_DISTANCE;
     }
 
     private static void serverLevelPostTick(ServerLevel level) {
@@ -66,9 +73,7 @@ public final class ObservingEyeblossomMod {
     }
 
     private static Set<BlockPos> getViewedBlockPositions(ServerPlayer player) {
-        double distance = (player.isUsingItem() && player.getUseItem().is(Items.SPYGLASS)
-                ? SPYGLAS_BLOSSOM_OBSERVATION_DISTANCE_MULT
-                : 1) * MAX_BLOSSOM_OBSERVATION_DISTANCE;
+        double distance = getMaxObservationDistance(player);
         Vec3 start = player.getEyePosition(1.0F);
         Vec3 end = start.add(player.getLookAngle().scale(distance));
         return traverseBlocks(start, end);
