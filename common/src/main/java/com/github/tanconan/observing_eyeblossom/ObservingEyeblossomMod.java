@@ -19,6 +19,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.EyeblossomBlock;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.gameevent.GameEvent.Context;
 import net.minecraft.world.phys.Vec3;
@@ -48,10 +49,11 @@ public final class ObservingEyeblossomMod {
         level.players().forEach(player -> viewedPositions.addAll(getViewedBlockPositions(player)));
 
         for (BlockPos pos : viewedPositions) {
-            if (level.getBlockState(pos).is(Blocks.OPEN_EYEBLOSSOM)) {
+            BlockState blockState = level.getBlockState(pos);
+            if (blockState.is(Blocks.OPEN_EYEBLOSSOM) || blockState.is(Blocks.POTTED_OPEN_EYEBLOSSOM)) {
                 openEyeblossoms.add(pos);
-            } else if (level.getBlockState(pos).is(Blocks.CLOSED_EYEBLOSSOM)) {
-                openEyeblossom(level, pos);
+            } else if (blockState.is(Blocks.CLOSED_EYEBLOSSOM) || blockState.is(Blocks.POTTED_CLOSED_EYEBLOSSOM)) {
+                openEyeblossom(level, pos, blockState);
                 openEyeblossoms.add(pos);
             }
         }
@@ -74,18 +76,31 @@ public final class ObservingEyeblossomMod {
         return traverseBlocks(start, end);
     }
 
-    private static void openEyeblossom(ServerLevel level, BlockPos pos) {
-        level.setBlockAndUpdate(pos, Blocks.OPEN_EYEBLOSSOM.defaultBlockState());
-        level.gameEvent(GameEvent.BLOCK_CHANGE, pos, Context.of(Blocks.CLOSED_EYEBLOSSOM.defaultBlockState()));
+    private static void openEyeblossom(ServerLevel level, BlockPos pos, BlockState blockState) {
+        BlockState wantedState;
+        if (blockState.is(Blocks.CLOSED_EYEBLOSSOM)) {
+            wantedState = Blocks.OPEN_EYEBLOSSOM.defaultBlockState();
+        } else {
+            wantedState = Blocks.POTTED_OPEN_EYEBLOSSOM.defaultBlockState();
+        }
+        level.setBlockAndUpdate(pos, wantedState);
+        level.gameEvent(GameEvent.BLOCK_CHANGE, pos, Context.of(blockState));
         EyeblossomBlock.Type.OPEN.spawnTransformParticle(level, pos, level.getRandom());
         level.playSound(null, pos, EyeblossomBlock.Type.OPEN.longSwitchSound(), SoundSource.BLOCKS, 1.0F, 1.0F);
     }
 
     private static void closeEyeblossom(ServerLevel level, BlockPos pos) {
-        if (!level.getBlockState(pos).is(Blocks.OPEN_EYEBLOSSOM))
+        BlockState blockState = level.getBlockState(pos);
+        BlockState wantedState;
+        if (blockState.is(Blocks.OPEN_EYEBLOSSOM)) {
+            wantedState = Blocks.CLOSED_EYEBLOSSOM.defaultBlockState();
+        } else if (blockState.is(Blocks.POTTED_OPEN_EYEBLOSSOM)) {
+            wantedState = Blocks.POTTED_CLOSED_EYEBLOSSOM.defaultBlockState();
+        } else {
             return;
-        level.setBlockAndUpdate(pos, Blocks.CLOSED_EYEBLOSSOM.defaultBlockState());
-        level.gameEvent(GameEvent.BLOCK_CHANGE, pos, Context.of(Blocks.OPEN_EYEBLOSSOM.defaultBlockState()));
+        }
+        level.setBlockAndUpdate(pos, wantedState);
+        level.gameEvent(GameEvent.BLOCK_CHANGE, pos, Context.of(blockState));
         EyeblossomBlock.Type.CLOSED.spawnTransformParticle(level, pos, level.getRandom());
         level.playSound(null, pos, EyeblossomBlock.Type.CLOSED.longSwitchSound(), SoundSource.BLOCKS, 1.0F, 1.0F);
     }
