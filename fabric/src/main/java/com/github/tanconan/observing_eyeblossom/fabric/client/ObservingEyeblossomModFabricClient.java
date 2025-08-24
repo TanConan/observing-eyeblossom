@@ -1,6 +1,7 @@
 package com.github.tanconan.observing_eyeblossom.fabric.client;
 
 import com.github.tanconan.observing_eyeblossom.ObservingEyeblossomMod;
+import com.github.tanconan.observing_eyeblossom.client.IsObserved;
 
 import net.fabricmc.api.ClientModInitializer;
 import net.minecraft.client.renderer.item.properties.conditional.ConditionalItemModelProperties;

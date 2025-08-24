@@ -8,7 +8,6 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import dev.architectury.event.events.common.TickEvent;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
@@ -34,17 +33,13 @@ public final class ObservingEyeblossomMod {
     private static final Map<ResourceKey<Level>, Set<BlockPos>> viewedPositionsPerDimension = new HashMap<>();
     private static final Map<ResourceKey<Level>, Set<BlockPos>> openEyeblossomsPerDimension = new HashMap<>();
 
-    public static void init() {
-        TickEvent.SERVER_LEVEL_POST.register(ObservingEyeblossomMod::serverLevelPostTick);
-    }
-
     public static double getMaxObservationDistance(Player player) {
         return (player.isUsingItem() && player.getUseItem().is(Items.SPYGLASS)
                 ? SPYGLAS_BLOSSOM_OBSERVATION_DISTANCE_MULT
                 : 1) * MAX_BLOSSOM_OBSERVATION_DISTANCE;
     }
 
-    private static void serverLevelPostTick(ServerLevel level) {
+    public static void serverLevelPostTick(ServerLevel level) {
         ResourceKey<Level> dimension = level.dimension();
 
         Set<BlockPos> viewedPositions = viewedPositionsPerDimension.computeIfAbsent(dimension, k -> new HashSet<>());

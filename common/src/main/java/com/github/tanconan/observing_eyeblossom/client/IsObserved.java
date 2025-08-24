@@ -1,4 +1,4 @@
-package com.github.tanconan.observing_eyeblossom.fabric.client;
+package com.github.tanconan.observing_eyeblossom.client;
 
 import com.github.tanconan.observing_eyeblossom.ObservingEyeblossomMod;
 import com.github.tanconan.observing_eyeblossom.mixin.AbstractContainerScreenAccessor;
@@ -36,20 +36,19 @@ public record IsObserved() implements ConditionalItemModelProperty {
                 if (d2 > maxDist * maxDist)
                     continue;
 
-                double d = Math.sqrt(d2);
-
-                double tolerance = 0.5;
-                double cosThreshold;
-                if (d > tolerance) {
-                    cosThreshold = Math.sqrt(1.0 - (tolerance * tolerance) / d2);
+                double tolerance2 = 0.25; // 0.5 * 0.5
+                double cosThreshold2;
+                if (d2 > tolerance2 && d2 != 0) {
+                    cosThreshold2 = 1.0 - tolerance2 / d2;
                 } else {
-                    cosThreshold = -1.0;
+                    return true;
                 }
 
                 Vec3 toItem = itemEntity.position().subtract(player.getEyePosition(1.0F)).normalize();
                 double dot = toItem.dot(player.getLookAngle());
+                double dot2 = dot * dot;
 
-                if (dot >= cosThreshold) {
+                if (dot2 >= cosThreshold2) {
                     return true;
                 }
             }
