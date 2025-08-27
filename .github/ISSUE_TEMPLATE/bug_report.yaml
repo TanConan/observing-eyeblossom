@@ -1,6 +1,6 @@
 name: Bug Report
 description: Report a bug to help improve the mod!
-asignees: "TanConan"
+assignees: "TanConan"
 body:
   - type: textarea
     attributes:
