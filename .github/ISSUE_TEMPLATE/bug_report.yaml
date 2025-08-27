@@ -16,6 +16,11 @@ body:
         1. Start by doing...
         2. Next do...
         3. See result described above
+  - type: textarea
+    id: logs
+    attributes:
+      label: Crash-Logs / Screenshots
+      description: If you have crash logs or screenshots, please upload them here.
   - type: dropdown
     id: minecraft-version
     attributes:
