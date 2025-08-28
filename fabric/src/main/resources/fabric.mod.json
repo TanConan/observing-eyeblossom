@@ -8,11 +8,11 @@
     "TanConan"
   ],
   "contact": {
-    "homepage": "",
-    "sources": "https://github.com/TanConan/observing-eyeblossom"
+    "sources": "https://github.com/TanConan/observing-eyeblossom",
+    "issues": "https://github.com/TanConan/observing-eyeblossom/issues"
   },
   "license": "MIT",
-  "icon": "assets/observing_eyeblossom/icon.png",
+  "icon": "assets/observing_eyeblossom/logo.png",
   "environment": "*",
   "entrypoints": {
     "main": [

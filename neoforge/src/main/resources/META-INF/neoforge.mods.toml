@@ -1,6 +1,6 @@
 modLoader = "javafml"
 loaderVersion = "[9,)"
-#issueTrackerURL = ""
+issueTrackerURL = "https://github.com/TanConan/observing-eyeblossom/issues"
 license = "MIT"
 
 [[mods]]
@@ -12,7 +12,7 @@ authors = "TanConan"
 description = '''
 The Eyeblossom now blooms when looked at!
 '''
-#logoFile = ""
+logoFile = "assets/observing_eyeblossom/logo.png"
 
 [[dependencies.observing_eyeblossom]]
 modId = "neoforge"
