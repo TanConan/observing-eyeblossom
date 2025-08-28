@@ -1,0 +1,51 @@
+name: Bug Report
+description: Report a bug to help improve the mod!
+assignees: "TanConan"
+body:
+  - type: textarea
+    attributes:
+      label: Issue description
+      description: A clear and concise description of the issue.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Steps to reproduce
+      description: If there are specific steps that need to be taken to reproduce the issue list them here.
+      placeholder: |
+        1. Start by doing...
+        2. Next do...
+        3. See result described above
+  - type: textarea
+    id: logs
+    attributes:
+      label: Crash-Logs / Screenshots
+      description: If you have crash logs or screenshots, please upload them here.
+  - type: dropdown
+    id: minecraft-version
+    attributes:
+      label: Minecraft version
+      description: What version of Minecraft are you using?
+      options:
+        - 1.21.8
+    validations:
+      required: true
+  - type: dropdown
+    id: modloader
+    attributes:
+      label: Modloader
+      description: Which Modloader are you using?
+      options:
+        - Fabric
+        - NeoForge
+    validations:
+      required: true
+  - type: dropdown
+    id: mod-version
+    attributes:
+      label: Observing Eyeblossom version
+      description: What version of the observing eyeblossom mod are you using?
+      options:
+        - 1.0.0 (Latest)
+    validations:
+      required: true
