@@ -46,7 +46,11 @@ public final class ObservingEyeblossomMod {
         Set<BlockPos> viewedPositions = viewedPositionsPerDimension.computeIfAbsent(dimension, k -> new HashSet<>());
         Set<BlockPos> openEyeblossoms = openEyeblossomsPerDimension.computeIfAbsent(dimension, k -> new HashSet<>());
 
-        level.players().forEach(player -> viewedPositions.addAll(getViewedBlockPositions(player)));
+        for (ServerPlayer player : level.players()) {
+            if (player.isSpectator())
+                continue;
+            viewedPositions.addAll(getViewedBlockPositions(player));
+        }
 
         for (BlockPos pos : viewedPositions) {
             BlockState blockState = level.getBlockState(pos);

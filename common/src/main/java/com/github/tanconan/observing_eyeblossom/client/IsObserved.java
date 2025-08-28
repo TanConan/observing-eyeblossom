@@ -27,7 +27,7 @@ public record IsObserved() implements ConditionalItemModelProperty {
 
     public boolean get(ItemStack itemStack, ClientLevel clientLevel, LivingEntity livingEntity,
             int i, ItemDisplayContext itemDisplayContext) {
-        // If the Itemstack ist in the world
+        // If the Itemstack is in the world
         if (itemDisplayContext == ItemDisplayContext.GROUND || itemDisplayContext == ItemDisplayContext.FIXED) {
             Entity itemEntity = itemStack.getEntityRepresentation();
             for (var player : clientLevel.players()) {
