@@ -1,15 +1,10 @@
 {
   "required": true,
   "package": "com.github.tanconan.observing_eyeblossom.mixin",
-  "compatibilityLevel": "JAVA_21",
+  "compatibilityLevel": "JAVA_25",
   "minVersion": "0.8",
-  "client": [
-    "AbstractContainerScreenAccessor"
-  ],
-  "mixins": [
-    "EyeblossomBlockMixin",
-    "BlockBehaviourMixin"
-  ],
+  "client": ["AbstractContainerScreenAccessor", "ItemModelResolverMixin"],
+  "mixins": ["EyeblossomBlockMixin", "BlockBehaviourMixin"],
   "injectors": {
     "defaultRequire": 1
   }

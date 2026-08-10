@@ -1,5 +1,5 @@
 modLoader = "javafml"
-loaderVersion = "[9,)"
+loaderVersion = "[1,)"
 issueTrackerURL = "https://github.com/TanConan/observing-eyeblossom/issues"
 license = "MIT"
 
@@ -12,19 +12,20 @@ authors = "TanConan"
 description = '''
 The Eyeblossom now blooms when looked at!
 '''
-logoFile = "assets/observing_eyeblossom/logo.png"
+bannerFile = "assets/observing_eyeblossom/logo.png"
+iconFile = "assets/observing_eyeblossom/logo.png"
 
 [[dependencies.observing_eyeblossom]]
 modId = "neoforge"
 type = "required"
-versionRange = "[21.9,)"
+versionRange = "[26.2.0,)"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.observing_eyeblossom]]
 modId = "minecraft"
 type = "required"
-versionRange = "[1.21.9,)"
+versionRange = "[26.2,)"
 ordering = "NONE"
 side = "BOTH"
 

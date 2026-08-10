@@ -27,9 +27,13 @@ body:
       label: Minecraft version
       description: What version of Minecraft are you using?
       options:
+        - 26.2
+        - 26.1
+        - 1.21.11
         - 1.21.10
         - 1.21.9
         - 1.21.8
+        - Other (Please specify in description)
     validations:
       required: true
   - type: dropdown

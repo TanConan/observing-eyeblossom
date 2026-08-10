@@ -8,6 +8,6 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 public final class ObservingEyeblossomModFabric implements ModInitializer {
     @Override
     public void onInitialize() {
-        ServerTickEvents.END_WORLD_TICK.register(ObservingEyeblossomMod::serverLevelPostTick);
+        ServerTickEvents.END_LEVEL_TICK.register(ObservingEyeblossomMod::serverLevelPostTick);
     }
 }

@@ -4,8 +4,6 @@ import com.github.tanconan.observing_eyeblossom.ObservingEyeblossomMod;
 import com.github.tanconan.observing_eyeblossom.mixin.AbstractContainerScreenAccessor;
 import com.mojang.serialization.MapCodec;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -18,19 +16,17 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 
-@Environment(EnvType.CLIENT)
 public record IsObserved() implements ConditionalItemModelProperty {
     public static final MapCodec<IsObserved> MAP_CODEC = MapCodec.unit(new IsObserved());
 
     public IsObserved() {
     }
 
-    public boolean get(ItemStack itemStack, ClientLevel clientLevel, LivingEntity livingEntity,
-            int i, ItemDisplayContext itemDisplayContext) {
+    public boolean get(ItemStack itemStack, ClientLevel level, LivingEntity owner, int seed, ItemDisplayContext displayContext) {
         // If the Itemstack is in the world
-        if (itemDisplayContext == ItemDisplayContext.GROUND || itemDisplayContext == ItemDisplayContext.FIXED) {
-            Entity itemEntity = itemStack.getEntityRepresentation();
-            for (var player : clientLevel.players()) {
+        if (displayContext == ItemDisplayContext.GROUND || displayContext == ItemDisplayContext.FIXED) {
+            Entity itemEntity = RenderingEntityContext.get();
+            for (var player : level.players()) {
                 double maxDist = ObservingEyeblossomMod.getMaxObservationDistance(player);
                 double d2 = player.distanceToSqr(itemEntity);
                 if (d2 > maxDist * maxDist)
@@ -54,7 +50,7 @@ public record IsObserved() implements ConditionalItemModelProperty {
             }
         }
         // If the Itemstack is in the players inventory
-        if (livingEntity instanceof LocalPlayer localPlayer) {
+        if (owner instanceof LocalPlayer localPlayer) {
             if (localPlayer.getInventory().getSelectedItem() == itemStack) {
                 return true;
             }
@@ -65,7 +61,7 @@ public record IsObserved() implements ConditionalItemModelProperty {
                 }
             }
             var mc = Minecraft.getInstance();
-            if (mc.screen instanceof AbstractContainerScreen<?> screen) {
+            if (mc.gui.screen() instanceof AbstractContainerScreen<?> screen) {
                 Slot hovered = ((AbstractContainerScreenAccessor) screen).getHoveredSlot();
                 if (hovered != null && !hovered.getItem().isEmpty() && hovered.getItem() == itemStack) {
                     return true;

@@ -4,9 +4,7 @@
   "version": "${version}",
   "name": "Observing Eyeblossom",
   "description": "The Eyeblossom now blooms when looked at!",
-  "authors": [
-    "TanConan"
-  ],
+  "authors": ["TanConan"],
   "contact": {
     "sources": "https://github.com/TanConan/observing-eyeblossom",
     "issues": "https://github.com/TanConan/observing-eyeblossom/issues"
@@ -22,13 +20,11 @@
       "com.github.tanconan.observing_eyeblossom.fabric.client.ObservingEyeblossomModFabricClient"
     ]
   },
-  "mixins": [
-    "observing_eyeblossom.mixins.json"
-  ],
+  "mixins": ["observing_eyeblossom.mixins.json"],
   "depends": {
-    "fabricloader": ">=0.17.3",
-    "minecraft": "~1.21.9",
-    "java": ">=21",
+    "fabricloader": ">=0.18.5",
+    "minecraft": "~26.2",
+    "java": ">=25",
     "fabric-api": "*"
   },
   "suggests": {
